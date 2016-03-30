@@ -1,0 +1,7 @@
+Installation
+------------
+1) Copy the password_expire folder to the Drupal modules/ directory.
+
+2) Go to 'Modules', and enable the module 'Password Expire'
+
+3) Configure the expiration settings on the configuration page: Configuration -> People -> Account settings -> Password Expire or use the 'Configure' button on the modules page.
