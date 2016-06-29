@@ -88,7 +88,7 @@ function password_expire_admin_settings($form, &$form_state) {
   $form['password_expire_settings']['password_expire_userroles'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Roles'),
-    '#default_value' => variable_get('password_expire_userroles', 1),
+    '#default_value' => variable_get('password_expire_userroles', array()),
     '#description' => t('Check which roles should change their password after the specified period.'),
     '#options' => $userroles,  
   );
