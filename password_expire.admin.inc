@@ -70,6 +70,28 @@ function password_expire_admin_settings($form, &$form_state) {
     '#default_value' => variable_get('password_expire_renewalrequired', NULL),
     '#description' => t('If this option is checked, a user should request a new password after his/her password is expired. This will prevent that a password is active for a longer period then the expiry period.'),
   );
+  $form['password_expire_settings']['password_expire_passwordchangedurl'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Page Redirect URL'),
+    '#default_value' => variable_get('password_expire_passwordchangedurl', NULL),
+    '#description' => t('Enter the URL to redirect to after a password has been changed successfully. <br />By default (or when empty) a drupal message will be displayed that the password has been changed successfully.'),
+  );
+  
+  $userroles = user_roles(TRUE);
+  if(isset($userroles[DRUPAL_ANONYMOUS_RID])) {
+    unset($userroles[DRUPAL_ANONYMOUS_RID]);
+  }
+  if(isset($userroles[DRUPAL_AUTHENTICATED_RID])) {
+    unset($userroles[DRUPAL_AUTHENTICATED_RID]);
+  }
+    
+  $form['password_expire_settings']['password_expire_userroles'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Roles'),
+    '#default_value' => variable_get('password_expire_userroles', 1),
+    '#description' => t('Check which roles should change their password after the specified period.'),
+    '#options' => $userroles,  
+  );
 
   $form['password_expire_messages'] = array(
     '#type' => 'fieldset',
@@ -98,6 +120,27 @@ function password_expire_admin_settings($form, &$form_state) {
     '#title' => t('Expired message'),
     '#description' => t('The message that will be displayed upon login to the user if their password is expired. Leave blank for no message.'),
     '#default_value' => variable_get('password_expire_expired_message', 'Your password is expired. Please change your password. Be sure to use a different password as before.'),
+    '#rows' => 2,
+  );
+  $form['password_expire_messages']['password_expire_passwordsame_message'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Password should be different message'),
+    '#description' => t('The message that will be displayed when a user tries to change his/her password and the password is the same as before.'),
+    '#default_value' => variable_get('password_expire_passwordsame_message', 'Please choose a password that you haven\'t used before.'),
+    '#rows' => 2,
+  );
+  $form['password_expire_messages']['password_expire_successful_message'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Password changed successfully message'),
+    '#description' => t('The message that will be displayed when a user has changed his/her password successfully.'),
+    '#default_value' => variable_get('password_expire_successful_message', 'Your password has been changed successfully.'),
+    '#rows' => 2,
+  );
+  $form['password_expire_messages']['password_expire_error_message'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Error message'),
+    '#description' => t('The message that will be displayed when a password could not be changed successfully.'),
+    '#default_value' => variable_get('password_expire_error_message', 'Unable to set password, please contact your site administrator.'),
     '#rows' => 2,
   );
 

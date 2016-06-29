@@ -1,5 +1,4 @@
-Readme
-------
+#### Readme
 
 This module allows administrators to set an expiry date on passwords. 
 Users that do not renew their passwords within the given time will have their passwords reset to a 
@@ -11,3 +10,8 @@ Both messages and emails can use (but do not require) the token module (http://d
 and provides tokens such as [password_expire:pass-expire-days-left] and [password_expire:pass-expire-date].
 
 Note: In order for password expiry to work properly, cron must be scheduled regularly.
+
+
+#### Todo
+
+* Add possibility to define password expiry length per user role
