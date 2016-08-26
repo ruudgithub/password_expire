@@ -3,6 +3,8 @@
  * Configuration page for password_expire
  */
 function password_expire_admin_settings($form, &$form_state) {
+  global $PASSWORD_EXPIRE_DEFAULT_POLICY;
+  
   $tokens = password_expire_token_info();
 
   $token_list = "";
@@ -51,19 +53,6 @@ function password_expire_admin_settings($form, &$form_state) {
     '#description' => '',
     '#group' => 'password_expire',
   );
-  $form['password_expire_settings']['password_expire_length'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Password Expiry Length'),
-    '#default_value' => variable_get('password_expire_length', NULL),
-    '#description' => t('Enter the period before a password will expire (e.g. +1days, +3months). If blank, passwords never expire.'),
-    '#group' => 'password_expire_settings',
-  );
-  $form['password_expire_settings']['password_expire_warning'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Warning period'),
-    '#default_value' => variable_get('password_expire_warning', '+1week'),
-    '#description' => t('The period of time a user is warned before their password expires.'),
-  );
   $form['password_expire_settings']['password_expire_renewalrequired'] = array(
     '#type' => 'checkbox',
     '#title' => t('Require user to request a new password if password is expired'),
@@ -77,6 +66,15 @@ function password_expire_admin_settings($form, &$form_state) {
     '#description' => t('Enter the URL to redirect to after a password has been changed successfully. <br />By default (or when empty) a drupal message will be displayed that the password has been changed successfully.'),
   );
   
+  $form['password_expire_roles'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Password Expire Roles'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#description' => '',
+    '#group' => 'password_expire',
+  );
+  
   $userroles = user_roles(TRUE);
   if(isset($userroles[DRUPAL_ANONYMOUS_RID])) {
     unset($userroles[DRUPAL_ANONYMOUS_RID]);
@@ -85,14 +83,54 @@ function password_expire_admin_settings($form, &$form_state) {
     unset($userroles[DRUPAL_AUTHENTICATED_RID]);
   }
     
-  $form['password_expire_settings']['password_expire_userroles'] = array(
+  $form['password_expire_roles']['password_expire_userroles'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Roles'),
     '#default_value' => variable_get('password_expire_userroles', array()),
     '#description' => t('Check which roles should change their password after the specified period.'),
-    '#options' => $userroles,  
+    '#options' => (is_array($userroles) ? $userroles : array()),  
   );
 
+  $form['password_expire_policy'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Password Expire Password Policy'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#description' => '',
+    '#group' => 'password_expire',
+  );
+  
+  $form['password_expire_policy']['password_expire_length'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Password Expiry Length'),
+    '#default_value' => variable_get('password_expire_length', NULL),
+    '#description' => t('Enter the period before a password will expire (e.g. +1week, +3months). If blank, passwords never expire.'),
+  );
+  $form['password_expire_policy']['password_expire_warning'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Warning period'),
+    '#default_value' => variable_get('password_expire_warning', '+1week'),
+    '#description' => t('The period of time a user is warned before their password expires (e.g. +1week, +3months).'),
+  );
+  
+  //For anyone's security force a password of at least DEFAULT_PASSWORD_LENGTH characters
+  $ar_passLength = array_combine(range(DEFAULT_PASSWORD_LENGTH,100),range(DEFAULT_PASSWORD_LENGTH,100));
+  $form['password_expire_policy']['password_expire_policy_password_length'] = array(
+    '#type' => 'select',
+    '#title' => t('Select the minimum password length'),
+    '#default_value' => variable_get('password_expire_policy_password_length', array(DEFAULT_PASSWORD_LENGTH)),
+    '#description' => t('Select the password policy requirements. If none of the options are selected, the default drupal behaviour will apply.'),
+    '#options' => ((isset($ar_passLength) && is_array($ar_passLength)) ? $ar_passLength : array(DEFAULT_PASSWORD_LENGTH)),
+  );
+  
+  $form['password_expire_policy']['password_expire_policy'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Define the password policy requirements'),
+    '#default_value' => empty(variable_get('password_expire_policy')) ? array_keys($PASSWORD_EXPIRE_DEFAULT_POLICY) : variable_get('password_expire_policy'),
+    '#description' => t('Select the password policy requirements. If none of the options are selected, the default drupal behaviour will apply.'),
+    '#options' => array('lowercase' => 'Lowercase (a-z)', 'uppercase' => 'Uppercase (A-Z)', 'numbers' => 'Numbers (0-9)', 'special' => 'Special (anything not alphanumeric f.e. !@#$%^&*()-+<>/?...)', 'diff_than_username' => 'Different than username'),
+  );
+  
   $form['password_expire_messages'] = array(
     '#type' => 'fieldset',
     '#title' => t('Password Expire Site Messages'),
@@ -113,7 +151,7 @@ function password_expire_admin_settings($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Repeat warning'),
     '#description' => t('If this is not checked the message will only be displayed once, when the user logs on to the site.'),
-    '#default_value' => variable_get('password_expire_repeat_warning_message', NULL),
+    '#default_value' => variable_get('password_expire_repeat_warning_message', FALSE),
   );
   $form['password_expire_messages']['password_expire_expired_message'] = array(
     '#type' => 'textarea',
@@ -144,6 +182,14 @@ function password_expire_admin_settings($form, &$form_state) {
     '#rows' => 2,
   );
 
+  $form['password_expire_messages']['password_expire_toosimple_message'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Password too simple message'),
+    '#description' => t('The message that will be displayed when the entered password is too simple according to the password policy.'),
+    '#default_value' => variable_get('password_expire_toosimple_message', 'Your password is too simple based on our requirements. Please check the requirements which show up when you try to enter your password.'),
+    '#rows' => 2,
+  );
+  
   if (module_exists('token')) {
     $token_types = module_invoke('password_expire', 'password_expire_token_types', 'password_expire');
 
@@ -179,7 +225,7 @@ function password_expire_admin_settings($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Active'),
     '#description' => t('Check to activate the e-mail'),
-    '#default_value' => variable_get('password_expire_email_password_changed_active', NULL),
+    '#default_value' => variable_get('password_expire_email_password_changed_active', FALSE),
   );
 
   $form['password_expire_email']['password_changed']['password_expire_email_password_changed_subject'] = array(
@@ -201,7 +247,7 @@ function password_expire_admin_settings($form, &$form_state) {
     '#title' => t('Password expired'),
     '#description' => t('This e-mail will be sent when the password of a user has been expired and needs renewal.'),
     '#collapsible' => TRUE,
-    '#collapsed' => variable_get('password_expire_email_password_needs_renewal_active') == 0 ? TRUE : FALSE,//TRUE,
+    '#collapsed' => variable_get('password_expire_email_password_needs_renewal_active') == 0 ? TRUE : FALSE,
     '#group' => 'email_password_needs_renewal',
   );
 
@@ -209,7 +255,7 @@ function password_expire_admin_settings($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Active'),
     '#description' => t('Check to activate the e-mail'),
-    '#default_value' => variable_get('password_expire_email_password_needs_renewal_active', NULL),
+    '#default_value' => variable_get('password_expire_email_password_needs_renewal_active', FALSE),
   );
 
   $form['password_expire_email']['password_needs_renewal']['password_expire_email_password_needs_renewal_subject'] = array(
@@ -231,7 +277,7 @@ function password_expire_admin_settings($form, &$form_state) {
     '#title' => t('Password failed'),
     '#description' => t('This e-mail will be sent when the password of a user could not be set due to a system error.'),
     '#collapsible' => TRUE,
-    '#collapsed' => variable_get('password_expire_email_password_failed_active') == 0 ? TRUE : FALSE,//TRUE,
+    '#collapsed' => variable_get('password_expire_email_password_failed_active') == 0 ? TRUE : FALSE,
     '#group' => 'email_password_failed',
   );
 
@@ -239,7 +285,7 @@ function password_expire_admin_settings($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Active'),
     '#description' => t('Check to activate the e-mail'),
-    '#default_value' => variable_get('password_expire_email_password_failed_active', NULL),
+    '#default_value' => variable_get('password_expire_email_password_failed_active', FALSE),
   );
 
   $form['password_expire_email']['password_failed']['password_expire_email_password_failed_subject'] = array(
