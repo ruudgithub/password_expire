@@ -102,7 +102,7 @@ function password_expire_admin_settings($form, &$form_state) {
   
   $form['password_expire_policy']['password_expire_length'] = array(
     '#type' => 'textfield',
-    '#title' => t('Password Expiry Length'),
+    '#title' => t('Expiry period'),
     '#default_value' => variable_get('password_expire_length', NULL),
     '#description' => t('Enter the period before a password will expire (e.g. +1week, +3months). If blank, passwords never expire.'),
   );
