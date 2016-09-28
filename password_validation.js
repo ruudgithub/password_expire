@@ -115,38 +115,19 @@ Drupal.evaluatePasswordStrength = function (password, translate) {
   // Count weaknesses.
   if (!hasLowercase) {
     msg.push(translate.addLowerCase);
-    weaknesses++;
+    strength -= 25;
   }  
   if (!hasUppercase) {
     msg.push(translate.addUpperCase);
-    weaknesses++;
+    strength -= 25;
   }
   if (!hasNumbers) {
     msg.push(translate.addNumbers);
-    weaknesses++;
+    strength -= 25;
   }
   if (!hasSpecial) {
     msg.push(translate.addSpecial);
-    weaknesses++;
-  }
-
-  // Apply penalty for each weakness (balanced against length penalty).
-  switch (weaknesses) {
-    case 1:
-      strength -= 12.5;
-      break;
-
-    case 2:
-      strength -= 25;
-      break;
-
-    case 3:
-      strength -= 40;
-      break;
-
-    case 4:
-      strength -= 100;
-      break;
+    strength -= 25;
   }
 
   //if strength is less then zero put strength back to zero else progress bar will dysfunction 
@@ -160,16 +141,15 @@ Drupal.evaluatePasswordStrength = function (password, translate) {
     strength = 0;
   }
   
-
   // Based on the strength, work out what text should be shown by the password strength meter.
-  if (strength < 60) {
-    indicatorText = translate.weak;
-  } else if (strength < 70) {
-    indicatorText = translate.fair;
-  } else if (strength < 80) {
-    indicatorText = translate.good;
-  } else if (strength <= 100) {
+  if (strength >= 100) {
     indicatorText = translate.strong;
+  } else if (strength >= 75) {
+    indicatorText = translate.good;
+  } else if (strength >= 50) {
+    indicatorText = translate.fair;
+  } else if (strength < 50) {
+    indicatorText = translate.weak;
   }
 
   // Assemble the final message.

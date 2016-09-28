@@ -1,4 +1,4 @@
-# Password Expire (Drupal Module)
+# Password Expire (Drupal 7 Module)
 
 This drupal module allows administrators to set an expiry date on passwords. 
 Users that do not renew their password within the given time will have to create a new password.
@@ -16,7 +16,7 @@ Both messages and emails can use (but do not require) the token module (https://
 ## Installation
 
 1. Copy the password_expire folder to Drupal's directory: sites/all/modules
-2. Go to Drupal, open 'Modules', and intall/enable the module 'Password Expire'
+2. Go to Drupal, open 'Modules', and install/enable the module 'Password Expire'
 3. Configure the password expiration settings on the configuration page: Configuration -> People -> Account settings -> Password Expire or use the 'Configure' button on the modules page.
 
 Note: In order for password expiry to work properly, cron must be scheduled regularly.

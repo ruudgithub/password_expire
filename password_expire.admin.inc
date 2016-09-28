@@ -128,7 +128,7 @@ function password_expire_admin_settings($form, &$form_state) {
     '#title' => t('Define the password policy requirements'),
     '#default_value' => empty(variable_get('password_expire_policy')) ? array_keys($PASSWORD_EXPIRE_DEFAULT_POLICY) : variable_get('password_expire_policy'),
     '#description' => t('Select the password policy requirements. If none of the options are selected, the default drupal behaviour will apply.'),
-    '#options' => array('lowercase' => 'Lowercase (a-z)', 'uppercase' => 'Uppercase (A-Z)', 'numbers' => 'Numbers (0-9)', 'special' => 'Special (anything not alphanumeric f.e. !@#$%^&*()-+<>/?...)', 'diff_than_username' => 'Different than username'),
+    '#options' => array('lowercase' => 'Lowercase (a-z)', 'uppercase' => 'Uppercase (A-Z)', 'numbers' => 'Numbers (0-9)', 'special' => 'Special (anything not alphanumeric f.e. !@#$%^&*()-+<>/?...)', 'diff_than_username' => 'Different than username', 'diff_than_previouspw' => 'Different than previous password'),
   );
   
   $form['password_expire_messages'] = array(
