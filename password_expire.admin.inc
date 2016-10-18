@@ -157,7 +157,7 @@ function password_expire_admin_settings($form, &$form_state) {
     '#type' => 'textarea',
     '#title' => t('Expired message'),
     '#description' => t('The message that will be displayed upon login to the user if their password is expired. Leave blank for no message.'),
-    '#default_value' => variable_get('password_expire_expired_message', 'Your password is expired. Please change your password. Be sure to use a different password as before.'),
+    '#default_value' => variable_get('password_expire_expired_message', 'Your password is expired. Due to our security considerations, you need to change your password. Please enter a new password in the \'Enter a new password\' field and confirm your new password in the \'Confirm your new password\' field. After that press \'Change password\' to set your new password.'),
     '#rows' => 2,
   );
   $form['password_expire_messages']['password_expire_passwordsame_message'] = array(
