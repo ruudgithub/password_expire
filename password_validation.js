@@ -27,6 +27,8 @@ Drupal.behaviors.password = {
       $(innerWrapper).prepend(passwordMeter);
       $("label[for='edit-pass-pass1']").text('Enter a new password');
       $("label[for='edit-pass-pass2']").text('Confirm your new password');
+      $("#edit-pass-pass1").attr("autocomplete", "new-password");
+      $("#edit-pass-pass2").attr("autocomplete", "new-password");
       var passwordDescription = $('div.password-suggestions', outerWrapper).hide();
 
       // Check the password strength.
@@ -113,12 +115,12 @@ Drupal.evaluatePasswordStrength = function (password, translate) {
     msg.unshift(translate.tooShort);
     strength -= ((Drupal.settings.policy_password_length - password.length) * 5) + 30;
   }
-  
+
   // Count weaknesses.
   if (!hasLowercase) {
     msg.push(translate.addLowerCase);
     strength -= 25;
-  }  
+  }
   if (!hasUppercase) {
     msg.push(translate.addUpperCase);
     strength -= 25;
@@ -132,7 +134,7 @@ Drupal.evaluatePasswordStrength = function (password, translate) {
     strength -= 25;
   }
 
-  //if strength is less then zero put strength back to zero else progress bar will dysfunction 
+  //if strength is less then zero put strength back to zero else progress bar will dysfunction
   if (strength < 0) {
     strength = 0;
   }
@@ -142,7 +144,7 @@ Drupal.evaluatePasswordStrength = function (password, translate) {
     // Passwords the same as username are always very weak.
     strength = 0;
   }
-  
+
   // Based on the strength, work out what text should be shown by the password strength meter.
   if (strength >= 100) {
     indicatorText = translate.strong;
