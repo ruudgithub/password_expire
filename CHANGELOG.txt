@@ -1,0 +1,4 @@
+1.1:
+----
+* Add drush job which can be scheduled to reset passwords that are expired to a random string to prevent that expired password keeps active
+* Default account mails from drupal can now be turned on or off via the interface at Configuration -> People -> Account settings
