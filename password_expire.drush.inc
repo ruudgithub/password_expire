@@ -24,7 +24,7 @@ function password_expire_drush_command() {
  * Drush command logic.
  * drush_[COMMAND_NAME]().
  */
-function drush_password_expire_reset_expired_passwords(){
+function drush_password_expire_reset_expired_passwords() {
   _password_expire_handle_expired_passwords();
 }
 ?>
