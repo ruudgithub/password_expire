@@ -91,6 +91,23 @@ function password_expire_admin_settings($form, &$form_state) {
     '#options' => (is_array($userroles) ? $userroles : array()),
   );
 
+  $form['password_expire_allow_password_change'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Password Expire Allow Password Change'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#description' => '',
+    '#group' => 'password_expire',
+  );
+
+  $form['password_expire_allow_password_change']['password_expire_allow_password_change_userroles'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Roles'),
+    '#default_value' => variable_get('password_expire_allow_password_change_userroles', array()),
+    '#description' => t('Check which roles are allowed to change their drupal password. This can be handy when you are using 3rd party SSO modules for certain user roles.'),
+    '#options' => (is_array($userroles) ? $userroles : array()),
+  );
+
   $form['password_expire_policy'] = array(
     '#type' => 'fieldset',
     '#title' => t('Password Expire Password Policy'),
