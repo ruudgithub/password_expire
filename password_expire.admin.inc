@@ -103,8 +103,25 @@ function password_expire_admin_settings($form, &$form_state) {
   $form['password_expire_allow_password_change']['password_expire_allow_password_change_userroles'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Roles'),
-    '#default_value' => variable_get('password_expire_allow_password_change_userroles', array()),
+    '#default_value' => variable_get('password_expire_allow_password_change_userroles', (is_array($userroles) ? array_keys($userroles) : array())),
     '#description' => t('Check which roles are allowed to change their drupal password. This can be handy when you are using 3rd party SSO modules for certain user roles.'),
+    '#options' => (is_array($userroles) ? $userroles : array()),
+  );
+
+  $form['password_expire_allow_email_change'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Password Expire Allow E-mail Change'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#description' => '',
+    '#group' => 'password_expire',
+  );
+
+  $form['password_expire_allow_email_change']['password_expire_allow_email_change_userroles'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Roles'),
+    '#default_value' => variable_get('password_expire_allow_email_change_userroles', (is_array($userroles) ? array_keys($userroles) : array())),
+    '#description' => t('Check which roles are allowed to change their drupal e-mail address. This can be handy when you are using 3rd party SSO modules for certain user roles.'),
     '#options' => (is_array($userroles) ? $userroles : array()),
   );
 
@@ -140,10 +157,12 @@ function password_expire_admin_settings($form, &$form_state) {
     '#options' => ((isset($ar_passLength) && is_array($ar_passLength)) ? $ar_passLength : array(DEFAULT_PASSWORD_LENGTH)),
   );
 
+  $default_passowrd_policy = array_keys($PASSWORD_EXPIRE_DEFAULT_POLICY);
+  $current_password_policy = variable_get('password_expire_policy');
   $form['password_expire_policy']['password_expire_policy'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Define the password policy requirements'),
-    '#default_value' => empty(variable_get('password_expire_policy')) ? array_keys($PASSWORD_EXPIRE_DEFAULT_POLICY) : variable_get('password_expire_policy'),
+    '#default_value' => empty($default_password_policy) ? $default_password_policy : $current_password_policy,
     '#description' => t('Select the password policy requirements. If none of the options are selected, the default drupal behaviour will apply.'),
     '#options' => array('lowercase' => 'Lowercase (a-z)', 'uppercase' => 'Uppercase (A-Z)', 'numbers' => 'Numbers (0-9)', 'special' => 'Special (anything not alphanumeric f.e. !@#$%^&*()-+<>/?...)', 'diff_than_username' => 'Different than username', 'diff_than_previouspw' => 'Different than previous password'),
   );
