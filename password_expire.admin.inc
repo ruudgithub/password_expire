@@ -157,12 +157,18 @@ function password_expire_admin_settings($form, &$form_state) {
     '#options' => ((isset($ar_passLength) && is_array($ar_passLength)) ? $ar_passLength : array(DEFAULT_PASSWORD_LENGTH)),
   );
 
-  $default_passowrd_policy = array_keys($PASSWORD_EXPIRE_DEFAULT_POLICY);
-  $current_password_policy = variable_get('password_expire_policy');
+  //Loop throught default policy and set values for password_expire_policy checkboxes
+  $default_policy = array();
+  foreach($PASSWORD_EXPIRE_DEFAULT_POLICY as $value => $active){
+    if($active == 1){
+      $default_policy[] = $value;
+    }
+  }
+
   $form['password_expire_policy']['password_expire_policy'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Define the password policy requirements'),
-    '#default_value' => empty($default_password_policy) ? $default_password_policy : $current_password_policy,
+    '#default_value' => variable_get('password_expire_policy', array_values($default_policy)),
     '#description' => t('Select the password policy requirements. If none of the options are selected, the default drupal behaviour will apply.'),
     '#options' => array('lowercase' => 'Lowercase (a-z)', 'uppercase' => 'Uppercase (A-Z)', 'numbers' => 'Numbers (0-9)', 'special' => 'Special (anything not alphanumeric f.e. !@#$%^&*()-+<>/?...)', 'diff_than_username' => 'Different than username', 'diff_than_previouspw' => 'Different than previous password'),
   );
