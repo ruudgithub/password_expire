@@ -1,3 +1,7 @@
+1.2:
+----
+* Add option in user admin to require user to change password on next login
+
 1.1:
 ----
 * Add drush job which can be scheduled to reset passwords that are expired to a random string to prevent that expired password keeps active
